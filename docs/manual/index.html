@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gen-loop-mcp Manual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-sidebar: #0f172a;
+            --bg-sidebar-hover: #1e293b;
+            --bg-main: #ffffff;
+            --text-main: #334155;
+            --text-heading: #0f172a;
+            --text-sidebar: #cbd5e1;
+            --text-sidebar-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --accent-bg: #f8fafc;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: var(--bg-sidebar);
+            color: var(--text-sidebar);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--bg-sidebar-hover);
+        }
+        .sidebar-header h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 700;
+        }
+        .nav-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding: 1rem 0;
+        }
+        .nav-scroll ul { list-style: none; padding: 0; margin: 0; }
+        .nav-scroll li { margin: 0; }
+        .section-title {
+            padding: 0 1.5rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-sidebar-muted);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .nav-item {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-sidebar);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover {
+            background-color: var(--bg-sidebar-hover);
+            color: #fff;
+        }
+        .nav-item.active {
+            background-color: var(--bg-sidebar-hover);
+            color: #fff;
+            border-left-color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--bg-main);
+        }
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+        }
+
+        /* Markdown Body */
+        .markdown-body { line-height: 1.7; }
+        .markdown-body h1 { font-size: 2.25rem; margin-bottom: 1.5rem; color: var(--text-heading); letter-spacing: -0.025em; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .markdown-body h2 { font-size: 1.75rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--text-heading); letter-spacing: -0.025em; }
+        .markdown-body h3 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--text-heading); font-weight: 600; }
+        .markdown-body p { margin-bottom: 1.25rem; }
+        .markdown-body ul, .markdown-body ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
+        .markdown-body li { margin-bottom: 0.25rem; }
+        .markdown-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .markdown-body a:hover { text-decoration: underline; }
+        .markdown-body code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875em;
+            background-color: #f1f5f9;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            color: #db2777;
+        }
+        .markdown-body pre {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            color: #e2e8f0;
+        }
+        .markdown-body pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .markdown-body blockquote {
+            border-left: 4px solid var(--primary-color);
+            background-color: var(--accent-bg);
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            color: #475569;
+        }
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .markdown-body th {
+            background-color: var(--accent-bg);
+            font-weight: 600;
+        }
+        .markdown-body img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Prev/Next Navigation Buttons */
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 6px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-heading);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: var(--accent-bg);
+        }
+
+        /* See Also Card */
+        .see-also {
+            margin-top: 2rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--accent-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        .see-also h2 {
+            font-size: 1rem;
+            margin: 0 0 0.75rem;
+            color: var(--text-sidebar-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .see-also ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .see-also li { margin: 0; }
+        .see-also a {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .see-also a:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Mobile Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                transform: translateX(-100%);
+                z-index: 50;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<button class="menu-toggle" id="menuToggle">&#9776;</button>
+
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h1>gen-loop-mcp Manual</h1>
+    </div>
+    <div class="nav-scroll">
+        <ul id="nav"></ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="content-container">
+        <div id="content" class="markdown-body">
+            <p>Loading...</p>
+        </div>
+        <div class="page-nav" id="pageNav">
+            <a href="#" id="prevBtn" class="nav-btn disabled">&#8592; Previous</a>
+            <a href="#" id="nextBtn" class="nav-btn disabled">Next &#8594;</a>
+        </div>
+    </div>
+</main>
+
+    <script>
+        const manifest = {
+  "title": "gen-loop-mcp Manual",
+  "sections": [
+    {
+      "name": "user-guide",
+      "title": "User Guide",
+      "prefix": "01",
+      "enabled": true,
+      "pages": [
+        {
+          "title": "Getting Started",
+          "filename": "01-getting-started.md"
+        },
+        {
+          "title": "Installation",
+          "filename": "02-installation.md"
+        },
+        {
+          "title": "Quick Start",
+          "filename": "03-quick-start.md"
+        },
+        {
+          "title": "Worked Examples",
+          "filename": "04-worked-examples.md"
+        }
+      ]
+    },
+    {
+      "name": "api-reference",
+      "title": "API Reference",
+      "prefix": "02",
+      "enabled": true,
+      "pages": [
+        {
+          "title": "Overview",
+          "filename": "01-overview.md"
+        }
+      ]
+    },
+    {
+      "name": "architecture",
+      "title": "Architecture",
+      "prefix": "03",
+      "enabled": true,
+      "pages": [
+        {
+          "title": "System Overview",
+          "filename": "01-system-overview.md"
+        },
+        {
+          "title": "Data Models",
+          "filename": "02-data-models.md"
+        }
+      ]
+    },
+    {
+      "name": "reference",
+      "title": "Reference",
+      "prefix": "04",
+      "enabled": true,
+      "pages": [
+        {
+          "title": "Configuration",
+          "filename": "01-configuration.md"
+        },
+        {
+          "title": "Error Handling",
+          "filename": "02-error-handling.md"
+        }
+      ]
+    },
+    {
+      "name": "appendix",
+      "title": "Appendix",
+      "prefix": "05",
+      "enabled": true,
+      "pages": [
+        {
+          "title": "Glossary",
+          "filename": "01-glossary.md"
+        },
+        {
+          "title": "FAQ",
+          "filename": "02-faq.md"
+        },
+        {
+          "title": "Changelog",
+          "filename": "03-changelog.md"
+        }
+      ]
+    }
+  ]
+};
+        let flatPages = [];
+
+        function buildFlatPageList() {
+            flatPages = [];
+            manifest.sections.forEach(section => {
+                if (!section.enabled) return;
+                section.pages.forEach(page => {
+                    flatPages.push({
+                        path: section.prefix + '-' + section.name + '/' + page.filename,
+                        title: page.title
+                    });
+                });
+            });
+        }
+
+        function buildNav() {
+            const nav = document.getElementById('nav');
+            manifest.sections.forEach(section => {
+                if (!section.enabled) return;
+                const sectionTitle = document.createElement('li');
+                sectionTitle.className = 'section-title';
+                sectionTitle.textContent = section.title;
+                nav.appendChild(sectionTitle);
+
+                section.pages.forEach(page => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#' + section.prefix + '-' + section.name + '/' + page.filename;
+                    a.textContent = page.title;
+                    a.className = 'nav-item';
+                    a.onclick = (e) => { e.preventDefault(); loadPage(a.href.split('#')[1]); };
+                    li.appendChild(a);
+                    nav.appendChild(li);
+                });
+            });
+        }
+
+        function resolveContentLink(href, currentPath) {
+            const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            const parts = [];
+            const base = href.startsWith('../') ? '' : currentDir;
+
+            if (base) parts.push(base);
+            const segments = href.split('/');
+            for (const seg of segments) {
+                if (seg === '..') { parts.pop(); }
+                else if (seg !== '.') { parts.push(seg); }
+            }
+            return parts.join('/');
+        }
+
+        function interceptContentLinks(currentPath) {
+            document.querySelectorAll('.markdown-body a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) return;
+                if (!href.endsWith('.md')) return;
+
+                const resolved = resolveContentLink(href, currentPath);
+                link.href = '#' + resolved;
+                link.onclick = (e) => { e.preventDefault(); loadPage(resolved); };
+            });
+        }
+
+        function styleSeeAlso() {
+            document.querySelectorAll('#content h2').forEach(h2 => {
+                if (h2.textContent.trim() === 'See Also') {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'see-also';
+                    h2.parentNode.insertBefore(wrapper, h2);
+                    wrapper.appendChild(h2);
+                    let next = wrapper.nextElementSibling;
+                    while (next && (next.tagName === 'UL' || next.tagName === 'P')) {
+                        const toMove = next;
+                        next = next.nextElementSibling;
+                        wrapper.appendChild(toMove);
+                        if (toMove.tagName === 'UL') break;
+                    }
+                }
+            });
+        }
+
+        function updatePageNav(path) {
+            const pageNav = document.getElementById('pageNav');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const idx = flatPages.findIndex(p => p.path === path);
+
+            if (idx === -1 || flatPages.length <= 1) {
+                pageNav.style.display = 'none';
+                return;
+            }
+            pageNav.style.display = 'flex';
+
+            if (idx > 0) {
+                const prev = flatPages[idx - 1];
+                const t = prev.title.length > 25 ? prev.title.substring(0, 23) + '...' : prev.title;
+                prevBtn.classList.remove('disabled');
+                prevBtn.innerHTML = '&#8592; ' + t;
+                prevBtn.onclick = (e) => { e.preventDefault(); loadPage(prev.path); };
+            } else {
+                prevBtn.classList.add('disabled');
+                prevBtn.innerHTML = '&#8592; Previous';
+                prevBtn.onclick = null;
+            }
+
+            if (idx < flatPages.length - 1) {
+                const next = flatPages[idx + 1];
+                const t = next.title.length > 25 ? next.title.substring(0, 23) + '...' : next.title;
+                nextBtn.classList.remove('disabled');
+                nextBtn.innerHTML = t + ' &#8594;';
+                nextBtn.onclick = (e) => { e.preventDefault(); loadPage(next.path); };
+            } else {
+                nextBtn.classList.add('disabled');
+                nextBtn.innerHTML = 'Next &#8594;';
+                nextBtn.onclick = null;
+            }
+        }
+
+        async function loadPage(path) {
+            try {
+                const response = await fetch(path);
+                if (!response.ok) throw new Error('Page not found');
+                let text = await response.text();
+
+                // Strip YAML frontmatter
+                if (text.startsWith('---')) {
+                    const endIndex = text.indexOf('---', 3);
+                    if (endIndex !== -1) {
+                        text = text.slice(endIndex + 3).trim();
+                    }
+                }
+
+                document.getElementById('content').innerHTML = marked.parse(text);
+                document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+
+                interceptContentLinks(path);
+                styleSeeAlso();
+                updatePageNav(path);
+
+                // Update active nav
+                document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+                const activeLink = document.querySelector('.nav-item[href="#' + path + '"]');
+                if (activeLink) activeLink.classList.add('active');
+
+                // Scroll to top
+                document.querySelector('.main-content').scrollTop = 0;
+
+                // Close mobile sidebar
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+
+                history.pushState(null, '', '#' + path);
+            } catch (e) {
+                console.error('Failed to load page:', path, e);
+                let errorMsg = '<h1>Page Not Found</h1>';
+                if (window.location.protocol === 'file:') {
+                    errorMsg += '<p><strong>Error:</strong> You are opening this file directly. The SPA requires HTTP serving.</p>';
+                    errorMsg += '<p>Run: <code>cd docs/manual && python -m http.server 8000</code></p>';
+                    errorMsg += '<p>Then open: <a href="http://localhost:8000">http://localhost:8000</a></p>';
+                } else {
+                    errorMsg += '<p>Could not load: <code>' + path + '</code></p>';
+                    errorMsg += '<p>Check that the file exists and the server is running from the correct directory.</p>';
+                }
+                document.getElementById('content').innerHTML = errorMsg;
+            }
+        }
+
+        function init() {
+            buildNav();
+            buildFlatPageList();
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                loadPage(hash);
+            } else {
+                const firstSection = manifest.sections.find(s => s.enabled);
+                if (firstSection && firstSection.pages.length > 0) {
+                    loadPage(firstSection.prefix + '-' + firstSection.name + '/' + firstSection.pages[0].filename);
+                }
+            }
+        }
+
+        document.getElementById('menuToggle').onclick = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        };
+
+        window.onhashchange = () => loadPage(window.location.hash.slice(1));
+        init();
+    </script>
+</body>
+</html>

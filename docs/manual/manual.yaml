@@ -1,0 +1,277 @@
+project_name: gen-loop-mcp
+project_path: /mnt/d/temp/myprojects/_pipeline-staging/gen-loop-mcp
+output_path: docs/manual
+title: gen-loop-mcp Manual
+description: ''
+version: 1.0.0
+sources:
+- id: readme_root
+  type: readme
+  path: README.md
+  description: Project README with installation and usage
+  priority: 85
+  metadata: {}
+- id: pyproject-a6f1343f
+  type: pyproject
+  path: pyproject.toml
+  description: ''
+  priority: 70
+  metadata:
+    filename: pyproject.toml
+- id: md-54142df3
+  type: markdown
+  path: CHANGELOG.md
+  description: ''
+  priority: 80
+  metadata:
+    filename: CHANGELOG.md
+    directory: .
+- id: md-76ded92d
+  type: markdown
+  path: CODE_OF_CONDUCT.md
+  description: ''
+  priority: 30
+  metadata:
+    filename: CODE_OF_CONDUCT.md
+    directory: .
+- id: md-c57a2591
+  type: markdown
+  path: CONTRIBUTING.md
+  description: ''
+  priority: 30
+  metadata:
+    filename: CONTRIBUTING.md
+    directory: .
+- id: md-642e70d3
+  type: markdown
+  path: SECURITY.md
+  description: ''
+  priority: 30
+  metadata:
+    filename: SECURITY.md
+    directory: .
+- id: md-2ab31ef8
+  type: markdown
+  path: .github/copilot-instructions.md
+  description: ''
+  priority: 30
+  metadata:
+    filename: copilot-instructions.md
+    directory: .github
+- id: md-8af7549e
+  type: markdown
+  path: .github/PULL_REQUEST_TEMPLATE.md
+  description: ''
+  priority: 30
+  metadata:
+    filename: PULL_REQUEST_TEMPLATE.md
+    directory: .github
+- id: md-4d3980f0
+  type: markdown
+  path: docs/ARCHITECTURE.md
+  description: ''
+  priority: 50
+  metadata:
+    filename: ARCHITECTURE.md
+    directory: docs
+- id: docstring-92020ebf
+  type: docstring
+  path: src/gen_loop/checks.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: checks.py
+    module: checks
+- id: docstring-b2df2c11
+  type: docstring
+  path: src/gen_loop/cli.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: cli.py
+    module: cli
+- id: docstring-469cb90a
+  type: docstring
+  path: src/gen_loop/notifier.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: notifier.py
+    module: notifier
+- id: docstring-877d5bd6
+  type: docstring
+  path: src/gen_loop/scheduler.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: scheduler.py
+    module: scheduler
+- id: docstring-d52a5967
+  type: docstring
+  path: src/gen_loop/server.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: server.py
+    module: server
+- id: docstring-c10c3d7e
+  type: docstring
+  path: src/gen_loop/store.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: store.py
+    module: store
+- id: docstring-37f268ae
+  type: docstring
+  path: src/gen_loop/templates.py
+  description: ''
+  priority: 60
+  metadata:
+    filename: templates.py
+    module: templates
+- id: folder-readme-eea0fe15
+  type: folder_readme
+  path: docs/README.md
+  description: Folder documentation for docs
+  priority: 55
+  metadata:
+    folder: docs
+    depth: 1
+- id: folder-readme-b5348d4b
+  type: folder_readme
+  path: scripts/README.md
+  description: Folder documentation for scripts
+  priority: 55
+  metadata:
+    folder: scripts
+    depth: 1
+- id: folder-readme-e59f7496
+  type: folder_readme
+  path: tests/README.md
+  description: Folder documentation for tests
+  priority: 55
+  metadata:
+    folder: tests
+    depth: 1
+- id: folder-readme-b55a7861
+  type: folder_readme
+  path: src/gen_loop/README.md
+  description: Folder documentation for src/gen_loop
+  priority: 55
+  metadata:
+    folder: src/gen_loop
+    depth: 2
+sections:
+- name: user-guide
+  title: User Guide
+  prefix: '01'
+  pages:
+  - title: Getting Started
+    filename: 01-getting-started.md
+    sources: []
+    template: null
+    order: 1
+  - title: Installation
+    filename: 02-installation.md
+    sources: []
+    template: null
+    order: 2
+  - title: Quick Start
+    filename: 03-quick-start.md
+    sources: []
+    template: null
+    order: 3
+  - title: Worked Examples
+    filename: 04-worked-examples.md
+    sources: []
+    template: null
+    order: 4
+  enabled: true
+- name: api-reference
+  title: API Reference
+  prefix: '02'
+  pages:
+  - title: Overview
+    filename: 01-overview.md
+    sources: []
+    template: null
+    order: 1
+  enabled: true
+- name: architecture
+  title: Architecture
+  prefix: '03'
+  pages:
+  - title: System Overview
+    filename: 01-system-overview.md
+    sources: []
+    template: null
+    order: 1
+  - title: Data Models
+    filename: 02-data-models.md
+    sources: []
+    template: null
+    order: 2
+  enabled: true
+- name: reference
+  title: Reference
+  prefix: '04'
+  pages:
+  - title: Configuration
+    filename: 01-configuration.md
+    sources: []
+    template: null
+    order: 1
+  - title: Error Handling
+    filename: 02-error-handling.md
+    sources: []
+    template: null
+    order: 2
+  enabled: true
+- name: appendix
+  title: Appendix
+  prefix: '05'
+  pages:
+  - title: Glossary
+    filename: 01-glossary.md
+    sources: []
+    template: null
+    order: 1
+  - title: FAQ
+    filename: 02-faq.md
+    sources: []
+    template: null
+    order: 2
+  - title: Changelog
+    filename: 03-changelog.md
+    sources: []
+    template: null
+    order: 3
+  enabled: true
+generate_spa: true
+generate_index: true
+created_at: '2026-04-02T16:08:18.328008'
+updated_at: '2026-04-02T16:08:43.855956'
+source_hashes:
+  readme_root: 664d807ee3a045d3f8b56f7c09b45fedcef1afca312af985b831e6dbb50ee95b
+  pyproject-a6f1343f: a6f1343fdf694ec313026dbcdb4123ad95ee8fe92050ce0bfbbd13dfeef00f58
+  md-54142df3: 54142df38375c547caed933e2e17dd27d301707552c1cc9fe27d735a8ac247e8
+  md-76ded92d: 76ded92d005dc35122c1ff9d79f14699bb27719c78b2e4deecb9638774042b3e
+  md-c57a2591: c57a25915f325c053bc2f830be010079d575a500086fa68fd3c485e549753382
+  md-642e70d3: 642e70d3ad511d0fd51d0440cc9d9dc1f5a25e3d3598f56d3f1c29169499ab33
+  md-2ab31ef8: 2ab31ef8ed49532cd11d138931abecc7d2e2d76de5846bfdf256dc044c138522
+  md-8af7549e: 8af7549ec721514b502c762f43ab9b93b080bf52be3934032ac2b96ea2d671b4
+  md-4d3980f0: 4d3980f0c909ec1af2f2ea88665e4942892b956c626a29aeedf298a8d13be97d
+  docstring-92020ebf: 92020ebf0e5c1f4a1ed83b56ff26671d5c2824bdf36fa490f6c710b8b36cf1fd
+  docstring-b2df2c11: 4ec1071f3185417ec89c1c28ad4854253deb967e890a8a8c99bcff7ccab4a511
+  docstring-469cb90a: 469cb90aa0c7f770d849655f521c0528eaaded3b050fd540b4fdc042a92cf582
+  docstring-877d5bd6: 877d5bd673b5690027ec1b54bc3b5ebd90ccacde5217e1374dbe4a6ee865c9f8
+  docstring-d52a5967: d52a59679d2a1838ed09083ce2ebdc614fe7c941a174f56cafcc22b97e0795d6
+  docstring-c10c3d7e: c10c3d7ea8a837cfe0357226a815c916d55d82405cfb8704121946ff9d94caa4
+  docstring-37f268ae: 37f268ae116e499b1f4eec0806b68f40a646fa2031da9d7feca95987869c3196
+  folder-readme-eea0fe15: eea0fe1509e5b0883bb4b370217222e5098d9be15d9e6629a9c20e2159bf8866
+  folder-readme-b5348d4b: b5348d4bb7931a3f6ca8bf87a37a33d7abf81c1d7652ff7bca7ce7b4f446a631
+  folder-readme-e59f7496: e59f74966afae4faa65c933e7ce6eef07ffa98a275a98cc15652268b91e22ffd
+  folder-readme-b55a7861: b55a7861cee30453620ac8fc98438e7a65c8cfa40bf4e67acf30d67bd1332938
+page_hashes: {}
+page_sources: {}
