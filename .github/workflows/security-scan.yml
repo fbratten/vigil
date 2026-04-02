@@ -1,0 +1,52 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  banned-patterns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Banned pattern scan
+        run: |
+          echo "Scanning for banned patterns..."
+          FAILED=0
+          for pattern in "spine" ".spine" "ai-memory" "NEXT.md" "anthropic" "claude"; do
+            HITS=$(grep -ri "$pattern" --include="*.py" --include="*.md" --include="*.json" --include="*.toml" . 2>/dev/null | grep -v ".git/" | grep -v "node_modules/" | grep -v "security-scan.yml" | wc -l)
+            if [ "$HITS" -gt 0 ]; then
+              echo "FAIL: Found $HITS occurrences of '$pattern'"
+              grep -ri "$pattern" --include="*.py" --include="*.md" --include="*.json" --include="*.toml" . 2>/dev/null | grep -v ".git/" | grep -v "node_modules/" | grep -v "security-scan.yml"
+              FAILED=1
+            else
+              echo "PASS: '$pattern' - zero hits"
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then
+            echo "Banned pattern scan FAILED"
+            exit 1
+          fi
+          echo "All banned pattern checks passed"
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Secret scan
+        run: |
+          pip install detect-secrets
+          detect-secrets scan --all-files --exclude-files ".git/.*" > .secrets-baseline.json
+          SECRETS=$(python -c "import json; d=json.load(open('.secrets-baseline.json')); print(len(d.get('results',{})))")
+          echo "Files with potential secrets: $SECRETS"
+          if [ "$SECRETS" -gt 0 ]; then
+            echo "WARNING: Potential secrets detected - review .secrets-baseline.json"
+            cat .secrets-baseline.json
+          fi

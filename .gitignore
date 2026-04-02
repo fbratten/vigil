@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+logs/
+*.log
+.env
+.env.local
+
+# Runtime data
+loop-store/*.json
+loop-store/*.jsonl
+
+# Build artifacts
+showcase.yaml
