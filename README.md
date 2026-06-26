@@ -1,6 +1,6 @@
 # vigil
 
-> Self-scheduling follow-up MCP server for AI agents — checks later, retries with backoff, and notifies when work resolves.
+> Self-scheduling follow-up MCP server for AI agents - checks later, retries with backoff, and notifies when work resolves.
 
 **Tagline:** No cron. No gateway. No external scheduler.
 
@@ -201,7 +201,7 @@ vigil can record notifications to file and/or send them through external channel
 
 ## CLI
 
-Inspect and manage the loop store from the command line — no MCP client needed.
+Inspect and manage the loop store from the command line - no MCP client needed.
 
 ```bash
 gen-loop-cli list                      # List all loops
