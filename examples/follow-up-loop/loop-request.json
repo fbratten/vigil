@@ -1,0 +1,12 @@
+{
+  "task": "Check whether the deployment is live",
+  "check_type": "http",
+  "check_command": "https://example.netlify.app",
+  "success_criteria": "",
+  "check_after_minutes": 5,
+  "max_retries": 3,
+  "retry_backoff_minutes": "5,15,60",
+  "expires_after_hours": 24,
+  "notify_method": "file",
+  "context_why": "The agent triggered a deployment and needs a durable follow-up check after the session may have moved on."
+}
