@@ -50,32 +50,33 @@ DEFAULT_SMTP_USE_TLS = os.environ.get("GEN_LOOP_SMTP_USE_TLS", "true").lower() =
 
 mcp = FastMCP(
     "gen-loop",
-    instructions="""gen-loop: Self-scheduling follow-up system with check-based monitoring and notifications.
+    instructions="""vigil: Self-scheduling follow-up system with check-based monitoring and notifications.
 
 Schedules tasks that need to be checked later — like build status, deployment health,
-or async operations. Each task has a check command (shell, HTTP, file, process), retry
-logic with backoff, expiry, and multi-channel notifications (Slack, Telegram, Discord,
-email, ntfy, Pushover, Gotify, Matrix, Twilio, Google Chat, Teams).
+or async operations. Each task has a check command, retry logic with backoff, expiry,
+and multi-channel notifications.
 
-TOOL SELECTION GUIDE:
+PUBLIC TOOL SURFACE:
 - Schedule a follow-up    → loop_schedule (task, check_command, check_after_minutes)
-- List active tasks        → loop_list (filter by status)
-- Check one task now       → loop_check (task_id) — run check immediately
-- Cancel a task            → loop_cancel (task_id)
-- Get task details         → loop_get (task_id)
-- View event history       → loop_events (task_id or all)
-- Start scheduler          → loop_start — begin background polling
-- Stop scheduler           → loop_stop — halt background polling
-- Configure notifications  → loop_configure_notify (method, webhook_url, etc.)
+- Check one loop now      → loop_check (loop_id) — run check immediately
+- List loops              → loop_list (filter by status)
+- Cancel a loop           → loop_cancel (loop_id)
+- View loop history       → loop_history (status, keyword, limit)
+- Use a template          → loop_schedule_template (template, target)
+- View dashboard          → loop_dashboard
+- Batch maintenance       → loop_batch (cancel_expired, retry_failed, cleanup_done, summary)
+- Write result            → loop_write_result (loop_id, file_path)
 
-TYPICAL WORKFLOW: loop_schedule → loop_start → (scheduler runs checks automatically)
-→ loop_list to monitor → loop_events for history.
+TYPICAL WORKFLOW: loop_schedule → internal scheduler runs automatically → loop_list
+or loop_dashboard to monitor → loop_history or loop_write_result after completion.
 
-CHECK TYPES: shell (run command, exit 0 = success), http (GET URL, 2xx = success),
-file (check file exists/modified), process (check PID running).
+CHECK TYPES: shell (run command, exit 0 = success), file_exists (path exists),
+http (GET URL, 2xx = success), grep (pattern::filepath).
 
-IMPORTANT: The scheduler runs as a background thread. Call loop_start to activate it.
-Tasks expire after expires_after_hours (default 24). Retries use configurable backoff.""",
+IMPORTANT: The scheduler starts inside main() and runs as a background thread.
+There are no public loop_start, loop_stop, loop_get, loop_events, or
+loop_configure_notify tools in this public implementation. Tasks expire after
+expires_after_hours (default 24). Retries use configurable backoff.""",
 )
 store = LoopStore(STORE_DIR)
 notifier = Notifier(STORE_DIR, default_method=DEFAULT_NOTIFY)
