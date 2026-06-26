@@ -1,18 +1,112 @@
-# Gen-Loop MCP Server 🔄
+# vigil
 
-**Standalone** self-scheduling follow-up system for AI agents. No external scheduler, no gateway, no cron — manages everything internally.
+> Self-scheduling follow-up MCP server for AI agents — checks later, retries with backoff, and notifies when work resolves.
 
-## Why?
+**Tagline:** No cron. No gateway. No external scheduler.
 
-`loop-mcp` needs OpenClaw. This doesn't. Plug it into **any** MCP client (desktop apps, IDE extensions, custom agents) and it just works.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)
+![Tests](https://img.shields.io/badge/tests-148-brightgreen.svg)
 
-## How It Works
+---
 
-1. Agent calls `loop_schedule` with a task + check command
-2. Internal scheduler thread polls every 10s
-3. When it's time, the check runs automatically
-4. Success → loop closes. Failure → retry with backoff. Timeout → expire.
-5. Notifications via file (JSONL), webhook (POST), Slack (Block Kit), Telegram (Bot API), Discord (Embeds), Teams (Adaptive Cards), ntfy.sh (push), Pushover (push), Gotify (push), Matrix (Client-Server API), Twilio SMS, Google Chat (Cards v2), email (SMTP), or stderr
+## 30-second demo
+
+Input: an AI agent starts work that cannot be verified immediately.
+
+vigil can:
+
+1. schedule a follow-up check,
+2. wait using its internal scheduler,
+3. run the check later,
+4. retry with backoff if it fails,
+5. expire stale loops,
+6. notify through file, webhook, chat, push, SMS, or email channels,
+7. expose status through MCP tools and CLI.
+
+Result: the agent does not need to remember to come back later.
+
+![vigil follow-up loop](docs/assets/vigil-loop.svg)
+
+## Before -> after
+
+### Before
+
+An agent says:
+
+```text
+I'll check later if the build finished.
+```
+
+But the session ends, context disappears, and nobody checks.
+
+### After
+
+vigil creates a durable loop:
+
+```text
+schedule -> wait -> check -> retry/backoff -> notify -> close
+```
+
+See [`examples/follow-up-loop/`](examples/follow-up-loop/) for a compact follow-up loop example.
+
+## Who this is for
+
+vigil is for people building AI agents, MCP workflows, local automation, deployment checks, build monitors, or operational loops where work needs to be checked after the current session has moved on.
+
+It is especially useful when an agent triggers something asynchronous and needs a durable responsibility layer instead of a fragile reminder in chat history.
+
+## What vigil is not
+
+vigil is not a general-purpose task manager.
+
+It is not meant to replace a full observability stack, queue system, or enterprise scheduler. It is a compact MCP-native follow-up layer: schedule a check, keep the loop alive, retry with backoff, record history, and notify when the state changes.
+
+## What is vigil?
+
+vigil is a standalone self-scheduling follow-up system for AI agents. No external scheduler, no gateway, no cron — it manages follow-up loops internally.
+
+It closes a common agent gap: agents often start work whose result cannot be known immediately. vigil turns that future responsibility into a concrete loop with timing, checks, retries, expiry, history, and notifications.
+
+## Why it matters
+
+AI agents are often good at starting work but weak at returning later. Builds finish, deployments settle, files appear, services become healthy, and async operations complete after the original session context has moved on.
+
+vigil makes those follow-ups durable. It:
+
+- schedules checks for later,
+- runs them through an internal polling loop,
+- retries failed checks with configurable backoff,
+- expires stale loops,
+- writes notification history,
+- supports multiple notification destinations,
+- provides both MCP tools and a CLI for inspection.
+
+## How it works
+
+```text
+Agent task / async operation
+        |
+        v
+  SCHEDULE
+  Store task, check type, command, timing, retry policy, and context
+        |
+        v
+  WAIT
+  Internal scheduler polls for loops that are due
+        |
+        v
+  CHECK
+  Run shell, file_exists, http, or grep checks
+        |
+        v
+  DECIDE
+  Success closes the loop; failure retries with backoff; stale loops expire
+        |
+        v
+  NOTIFY + HISTORY
+  Record events and notify through configured channels
+```
 
 ## MCP Tools (9)
 
@@ -28,7 +122,7 @@
 | `loop_batch` | Batch ops (cancel expired, retry failed, etc.) |
 | `loop_write_result` | Write result to any file |
 
-## Check Types
+## Check Types (4)
 
 - `shell` — command exit code or output match
 - `file_exists` — file appeared at path
@@ -49,6 +143,25 @@
 | `port_listening` | shell | Verify port is listening |
 | `systemd_service` | shell | Verify systemd service active |
 | `dns_resolve` | shell | Verify DNS resolution |
+
+## Notification destinations
+
+vigil can record notifications to file and/or send them through external channels when configured:
+
+- file JSONL
+- generic webhook
+- Slack
+- Telegram
+- Discord
+- Microsoft Teams
+- ntfy.sh
+- Pushover
+- Gotify
+- Matrix
+- Twilio SMS
+- Google Chat
+- email / SMTP
+- stderr logging
 
 ## Configuration (env vars)
 
@@ -86,7 +199,7 @@
 | `GEN_LOOP_SMTP_USE_TLS` | `true` | Use STARTTLS encryption |
 | `GEN_LOOP_MAX_CONCURRENT` | `5` | Max concurrent check threads |
 
-## CLI Tool (`gen-loop-cli`)
+## CLI
 
 Inspect and manage the loop store from the command line — no MCP client needed.
 
@@ -109,11 +222,15 @@ gen-loop-cli notifications --include-rotated --json
 ## Quick Start
 
 ```bash
-# Install
-cd gen-loop-mcp && uv pip install -e ".[dev]"
+# Install from a local checkout
+cd vigil
+uv pip install -e ".[dev]"
 
-# Run tests (148 tests)
+# Run tests
 pytest tests/ -v
+
+# Run as an MCP server
+python -m gen_loop.server
 
 # Use via mcporter
 mcporter call gen-loop.loop_schedule task="Check build" check_command="ls dist/" check_after_minutes=2
@@ -125,6 +242,18 @@ gen-loop-cli list
 gen-loop-cli dashboard
 ```
 
+## Example
+
+See [`examples/follow-up-loop/`](examples/follow-up-loop/) for a compact example showing a loop request, notification event, and written result.
+
+## Showcase
+
+See the [vigil showcase site](https://fbratten.github.io/vigil-showcase/) for demos and documentation.
+
 ## Version
 
-0.15.0 — Notification history CLI, Google Chat, Twilio SMS, Matrix, Gotify, Pushover, Email, Ntfy.sh, Teams, Discord, Telegram, Slack notifications, CLI tool (8 subcommands), 10 templates, 148 tests.
+0.15.0 — durable follow-up loops, internal scheduler, 9 MCP tools, 4 check types, 10 templates, multi-channel notifications, CLI inspection, and 148 tests.
+
+## License
+
+MIT
